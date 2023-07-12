@@ -28,7 +28,7 @@ describe("Get Pet Details", () => {
     expect(pet.city).toEqual("Aracaju/Se");
   });
 
-  it("shoud not be able to get details pet with wrong id", async () => {
+  it("should not be able to get details pet with wrong id", async () => {
     await expect(() =>
       sut.execute({ petId: "non-existing-id" })
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
