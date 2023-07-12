@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { Pet, Prisma } from "@prisma/client";
 import { PetsRepository } from "../pets-repository";
-import { Decimal } from "@prisma/client/runtime";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export class InMemoryPetsRepository implements PetsRepository {
   public items: Pet[] = [];
@@ -30,8 +30,10 @@ export class InMemoryPetsRepository implements PetsRepository {
     return pet;
   }
 
-  async findManyByCity(city: string) {
-    const pets = this.items.filter((pets) => pets.city === city);
+  async findManyByCity(city: string, page: number) {
+    const pets = this.items
+      .filter((pets) => pets.city === city)
+      .slice((page - 1) * 20, page * 20);
 
     return pets;
   }
