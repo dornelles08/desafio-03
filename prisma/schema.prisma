@@ -25,12 +25,12 @@ model Org {
 }
 
 model Pet {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   species    String
   age        Decimal
   city       String
-  adopted_at DateTime @default(now())
-  created_at DateTime @default(now())
+  adopted_at DateTime?
+  created_at DateTime  @default(now())
 
   org    Org    @relation(fields: [org_id], references: [id])
   org_id String
