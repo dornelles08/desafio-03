@@ -32,7 +32,7 @@ export class InMemoryPetsRepository implements PetsRepository {
 
   async findManyByCity(city: string, page: number) {
     const pets = this.items
-      .filter((pets) => pets.city === city)
+      .filter((pet) => pet.city === city && !pet.adopted_at)
       .slice((page - 1) * 20, page * 20);
 
     return pets;

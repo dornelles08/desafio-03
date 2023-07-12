@@ -12,7 +12,7 @@ describe("Get Pets Use Case", () => {
     sut = new GetPetsUseCase(petsRepository);
   });
 
-  it("should be able get pets", async () => {
+  it("should be able get adoptable pets", async () => {
     await petsRepository.create({
       id: "pet-1",
       age: 14,
@@ -27,15 +27,13 @@ describe("Get Pets Use Case", () => {
       city: "Aracaju/Se",
       org_id: "org-1",
       species: "gato",
+      adopted_at: new Date(),
     });
 
     const { pets } = await sut.execute({ city: "Aracaju/Se", page: 1 });
 
-    expect(pets).toHaveLength(2);
-    expect(pets).toEqual([
-      expect.objectContaining({ species: "cachorro" }),
-      expect.objectContaining({ species: "gato" }),
-    ]);
+    expect(pets).toHaveLength(1);
+    expect(pets).toEqual([expect.objectContaining({ species: "cachorro" })]);
   });
 
   it("should be able get empty list", async () => {
