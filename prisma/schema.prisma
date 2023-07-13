@@ -35,5 +35,17 @@ model Pet {
   org    Org    @relation(fields: [org_id], references: [id])
   org_id String
 
+  Characteristic Characteristic[]
+
   @@map("pets")
+}
+
+model Characteristic {
+  id          String @id @default(uuid())
+  description String
+
+  pet    Pet    @relation(fields: [pet_id], references: [id])
+  pet_id String
+
+  @@map("characteristics")
 }
