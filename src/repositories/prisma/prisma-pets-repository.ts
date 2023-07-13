@@ -24,4 +24,23 @@ export class PrismaPetsrepository implements PetsRepository {
 
     return pets;
   }
+
+  async findManyByCharacteristics(
+    characteristics: string[],
+    city: string,
+    page: number
+  ) {
+    const pets = await prisma.pet.findMany({
+      where: { city },
+      take: 20,
+      skip: (page - 1) * 20,
+      include: { Characteristic: true },
+    });
+
+    return pets.filter((pet) =>
+      pet.Characteristic.some((characteristic) =>
+        characteristics.includes(characteristic.description)
+      )
+    );
+  }
 }

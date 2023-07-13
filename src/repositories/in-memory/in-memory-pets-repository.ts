@@ -2,9 +2,12 @@ import { randomUUID } from "crypto";
 import { Pet, Prisma } from "@prisma/client";
 import { PetsRepository } from "../pets-repository";
 import { Decimal } from "@prisma/client/runtime/library";
+import { CharacteristicsRepository } from "../characteristics-repository";
 
 export class InMemoryPetsRepository implements PetsRepository {
   public items: Pet[] = [];
+
+  constructor(private characteristicsRepository: CharacteristicsRepository) {}
 
   async create(data: Prisma.PetUncheckedCreateInput) {
     const pet = {
@@ -36,5 +39,27 @@ export class InMemoryPetsRepository implements PetsRepository {
       .slice((page - 1) * 20, page * 20);
 
     return pets;
+  }
+
+  async findManyByCharacteristics(
+    characteristics: string[],
+    city: string,
+    page: number
+  ) {
+    const petIds: string[] = [];
+
+    for await (const characteristic of characteristics) {
+      const petSpecificIds = (
+        await this.characteristicsRepository.findMany(characteristic)
+      ).map(({ pet_id }) => pet_id);
+
+      petIds.push(...petSpecificIds);
+    }
+
+    const pet = this.items
+      .filter((item) => petIds.includes(item.id) && item.city === city)
+      .slice((page - 1) * 20, page * 20);
+
+    return pet;
   }
 }
