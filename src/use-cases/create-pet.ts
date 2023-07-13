@@ -1,4 +1,4 @@
-import { CharacteristicRepository } from "@/repositories/characteristic-repository";
+import { CharacteristicsRepository } from "@/repositories/characteristics-repository";
 import { PetsRepository } from "@/repositories/pets-repository";
 import { Pet } from "@prisma/client";
 
@@ -17,7 +17,7 @@ interface CreatePetUseCaseResponse {
 export class CreatePetUseCase {
   constructor(
     private petsRepository: PetsRepository,
-    private characteristicRepository: CharacteristicRepository
+    private characteristicRepository: CharacteristicsRepository
   ) {}
 
   async execute({
@@ -41,7 +41,6 @@ export class CreatePetUseCase {
       });
     });
 
-    
     return { pet };
   }
 }

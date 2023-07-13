@@ -3,13 +3,17 @@ import { GetPetDetailsUseCase } from "./get-pet-details";
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryPetsRepository } from "@/repositories/in-memory/in-memory-pets-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { CharacteristicsRepository } from "@/repositories/characteristics-repository";
+import { InMemoryCharacteristicsRepository } from "@/repositories/in-memory/in-memory-characteristics-repository";
 
 let petsRepository: PetsRepository;
+let characteristcsRepository: CharacteristicsRepository;
 let sut: GetPetDetailsUseCase;
 
 describe("Get Pet Details", () => {
   beforeEach(() => {
-    petsRepository = new InMemoryPetsRepository();
+    characteristcsRepository = new InMemoryCharacteristicsRepository();
+    petsRepository = new InMemoryPetsRepository(characteristcsRepository);
     sut = new GetPetDetailsUseCase(petsRepository);
   });
 

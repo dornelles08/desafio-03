@@ -1,7 +1,7 @@
 import { PetsRepository } from "@/repositories/pets-repository";
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryPetsRepository } from "@/repositories/in-memory/in-memory-pets-repository";
-import { GetPetsByCharacteristcsUseCase } from "./get-pets-by-characteristic";
+import { GetPetsByCharacteristcsUseCase } from "./get-pets-by-characteristics";
 import { CharacteristicsRepository } from "@/repositories/characteristics-repository";
 import { InMemoryCharacteristicsRepository } from "@/repositories/in-memory/in-memory-characteristics-repository";
 

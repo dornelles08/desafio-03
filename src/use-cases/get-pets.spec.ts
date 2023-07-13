@@ -2,13 +2,17 @@ import { PetsRepository } from "@/repositories/pets-repository";
 import { GetPetsUseCase } from "./get-pets";
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryPetsRepository } from "@/repositories/in-memory/in-memory-pets-repository";
+import { CharacteristicsRepository } from "@/repositories/characteristics-repository";
+import { InMemoryCharacteristicsRepository } from "@/repositories/in-memory/in-memory-characteristics-repository";
 
 let petsRepository: PetsRepository;
+let characteristcsRepository: CharacteristicsRepository;
 let sut: GetPetsUseCase;
 
 describe("Get Pets Use Case", () => {
   beforeEach(() => {
-    petsRepository = new InMemoryPetsRepository();
+    characteristcsRepository = new InMemoryCharacteristicsRepository();
+    petsRepository = new InMemoryPetsRepository(characteristcsRepository);
     sut = new GetPetsUseCase(petsRepository);
   });
 
