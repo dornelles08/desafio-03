@@ -6,13 +6,13 @@ import { CharacteristicsRepository } from "@/repositories/characteristics-reposi
 import { InMemoryCharacteristicsRepository } from "@/repositories/in-memory/in-memory-characteristics-repository";
 
 let petsRepository: PetsRepository;
-let characteristcsRepository: CharacteristicsRepository;
+let characteristicsRepository: CharacteristicsRepository;
 let sut: GetPetsUseCase;
 
 describe("Get Pets Use Case", () => {
   beforeEach(() => {
-    characteristcsRepository = new InMemoryCharacteristicsRepository();
-    petsRepository = new InMemoryPetsRepository(characteristcsRepository);
+    characteristicsRepository = new InMemoryCharacteristicsRepository();
+    petsRepository = new InMemoryPetsRepository(characteristicsRepository);
     sut = new GetPetsUseCase(petsRepository);
   });
 
@@ -34,7 +34,11 @@ describe("Get Pets Use Case", () => {
       adopted_at: new Date(),
     });
 
-    const { pets } = await sut.execute({ city: "Aracaju/Se", page: 1 });
+    const { pets } = await sut.execute({
+      city: "Aracaju/Se",
+      characteristics: [],
+      page: 1,
+    });
 
     expect(pets).toHaveLength(1);
     expect(pets).toEqual([expect.objectContaining({ species: "cachorro" })]);
@@ -48,7 +52,11 @@ describe("Get Pets Use Case", () => {
       org_id: "org-1",
       species: "cachorro",
     });
-    const { pets } = await sut.execute({ city: "Aracaju/Se", page: 1 });
+    const { pets } = await sut.execute({
+      city: "Aracaju/Se",
+      characteristics: [],
+      page: 1,
+    });
 
     expect(pets).toHaveLength(0);
   });
@@ -64,12 +72,78 @@ describe("Get Pets Use Case", () => {
       });
     }
 
-    const { pets } = await sut.execute({ city: "Aracaju/Se", page: 2 });
+    const { pets } = await sut.execute({
+      city: "Aracaju/Se",
+      characteristics: [],
+      page: 2,
+    });
 
     expect(pets).toHaveLength(2);
     expect(pets).toEqual([
       expect.objectContaining({ id: "pet-21" }),
       expect.objectContaining({ id: "pet-22" }),
+    ]);
+  });
+
+  it("should be able to get pets by characterists", async () => {
+    await petsRepository.create({
+      id: "pet-1",
+      age: 4,
+      city: "Aracaju/Se",
+      org_id: "org-1",
+      species: "cachorro",
+    });
+
+    await characteristicsRepository.create({
+      id: "c-1",
+      description: "fofo",
+      pet_id: "pet-1",
+    });
+
+    await characteristicsRepository.create({
+      id: "c-2",
+      description: "peludo",
+      pet_id: "pet-1",
+    });
+
+    await petsRepository.create({
+      id: "pet-2",
+      age: 1,
+      city: "Rio de Janeiri/Rj",
+      org_id: "org-1",
+      species: "gato",
+    });
+
+    await characteristicsRepository.create({
+      id: "c-4",
+      description: "peludo",
+      pet_id: "pet-2",
+    });
+
+    await petsRepository.create({
+      id: "pet-3",
+      age: 14,
+      city: "Aracaju/Se",
+      org_id: "org-1",
+      species: "cachorro",
+    });
+
+    await characteristicsRepository.create({
+      id: "c-3",
+      description: "peludo",
+      pet_id: "pet-3",
+    });
+
+    const { pets } = await sut.execute({
+      characteristics: ["peludo", "fofo"],
+      city: "Aracaju/Se",
+      page: 1,
+    });
+
+    expect(pets).toHaveLength(2);
+    expect(pets).toEqual([
+      expect.objectContaining({ id: "pet-1" }),
+      expect.objectContaining({ id: "pet-3" }),
     ]);
   });
 });

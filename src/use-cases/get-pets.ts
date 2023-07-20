@@ -3,6 +3,7 @@ import { Pet } from "@prisma/client";
 
 interface GetPetsUseCaseRequest {
   city: string;
+  characteristics: string[];
   page: number;
 }
 
@@ -15,9 +16,14 @@ export class GetPetsUseCase {
 
   async execute({
     city,
+    characteristics,
     page,
   }: GetPetsUseCaseRequest): Promise<GetPetsUseCaseResponse> {
-    const pets = await this.petsRepository.findManyByCity(city, page);
+    const pets = await this.petsRepository.findMany(
+      city,
+      characteristics,
+      page
+    );
 
     return { pets };
   }

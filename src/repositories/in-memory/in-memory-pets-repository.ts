@@ -25,6 +25,14 @@ export class InMemoryPetsRepository implements PetsRepository {
     return pet;
   }
 
+  async setAdopt(petId: string) {
+    const petIndex = this.items.findIndex(({ id }) => id === petId);
+
+    this.items[petIndex].adopted_at = new Date();
+
+    return this.items[petIndex];
+  }
+
   async findById(id: string) {
     const pet = this.items.find((pet) => pet.id === id);
 
@@ -33,33 +41,32 @@ export class InMemoryPetsRepository implements PetsRepository {
     return pet;
   }
 
-  async findManyByCity(city: string, page: number) {
-    const pets = this.items
-      .filter((pet) => pet.city === city && !pet.adopted_at)
-      .slice((page - 1) * 20, page * 20);
+  async findMany(city: string, characteristics: string[], page: number) {
+    if (characteristics.length) {
+      const petIds: string[] = [];
 
-    return pets;
-  }
+      for await (const characteristic of characteristics) {
+        const petSpecificIds = (
+          await this.characteristicsRepository.findMany(characteristic)
+        ).map(({ pet_id }) => pet_id);
 
-  async findManyByCharacteristics(
-    characteristics: string[],
-    city: string,
-    page: number
-  ) {
-    const petIds: string[] = [];
+        petIds.push(...petSpecificIds);
+      }
 
-    for await (const characteristic of characteristics) {
-      const petSpecificIds = (
-        await this.characteristicsRepository.findMany(characteristic)
-      ).map(({ pet_id }) => pet_id);
+      const pets = this.items
+        .filter(
+          (item) =>
+            petIds.includes(item.id) && item.city === city && !item.adopted_at
+        )
+        .slice((page - 1) * 20, page * 20);
 
-      petIds.push(...petSpecificIds);
+      return pets;
+    } else {
+      const pets = this.items
+        .filter((pet) => pet.city === city && !pet.adopted_at)
+        .slice((page - 1) * 20, page * 20);
+
+      return pets;
     }
-
-    const pet = this.items
-      .filter((item) => petIds.includes(item.id) && item.city === city)
-      .slice((page - 1) * 20, page * 20);
-
-    return pet;
   }
 }

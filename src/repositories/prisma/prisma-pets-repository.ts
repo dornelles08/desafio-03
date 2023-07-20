@@ -9,27 +9,29 @@ export class PrismaPetsRepository implements PetsRepository {
     return pet;
   }
 
-  async findById(id: string) {
-    const pet = await prisma.pet.findUnique({ where: { id } });
+  async setAdopt(petId: string) {
+    const pet = await prisma.pet.update({
+      data: {
+        adopted_at: new Date(),
+      },
+      where: {
+        id: petId,
+      },
+    });
 
     return pet;
   }
 
-  async findManyByCity(city: string, page: number) {
-    const pets = await prisma.pet.findMany({
-      where: { city },
-      take: 20,
-      skip: (page - 1) * 20,
+  async findById(id: string) {
+    const pet = await prisma.pet.findUnique({
+      where: { id },
+      include: { Characteristic: true },
     });
 
-    return pets;
+    return pet;
   }
 
-  async findManyByCharacteristics(
-    characteristics: string[],
-    city: string,
-    page: number
-  ) {
+  async findMany(city: string, characteristics: string[], page: number) {
     const pets = await prisma.pet.findMany({
       where: { city },
       take: 20,
@@ -37,10 +39,14 @@ export class PrismaPetsRepository implements PetsRepository {
       include: { Characteristic: true },
     });
 
-    return pets.filter((pet) =>
-      pet.Characteristic.some((characteristic) =>
-        characteristics.includes(characteristic.description)
-      )
-    );
+    if (characteristics.length) {
+      return pets.filter((pet) =>
+        pet.Characteristic.some((characteristic) =>
+          characteristics.includes(characteristic.description)
+        )
+      );
+    }
+
+    return pets;
   }
 }
